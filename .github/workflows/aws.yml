@@ -52,7 +52,8 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         source: server
-        target: /app
+        target: /home/ec2-user
+        rm: true # Remove target folder before copy
       
     - name: SSH into EC2 instance
       uses: appleboy/ssh-action@master
