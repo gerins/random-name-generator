@@ -17,7 +17,7 @@ jobs:
 
       - name: Build and package Go app
         run: |
-          go build -o server
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server main.go
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
@@ -25,7 +25,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.EC2_HOST }}
           REMOTE_USER: ${{ secrets.EC2_USERNAME }}
-          TARGET: "/home/gerin"
+          TARGET: "~"
 
       - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
