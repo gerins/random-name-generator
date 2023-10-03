@@ -7,6 +7,7 @@ import (
 
 	"github.com/Pallinder/go-randomdata"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type Person struct {
@@ -22,6 +23,10 @@ func main() {
 	flag.Parse()
 
 	e := echo.New()
+
+	// Root level middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	e.GET("/api/person", func(c echo.Context) error {
 		person := Person{
