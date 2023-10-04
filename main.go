@@ -28,7 +28,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/api/person", func(c echo.Context) error {
+	e.GET("/person", func(c echo.Context) error {
 		person := Person{
 			FirstName: randomdata.FirstName(randomdata.RandomGender),
 			LastName:  randomdata.LastName(),
