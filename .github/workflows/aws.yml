@@ -20,8 +20,8 @@ jobs:
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: go-server         # Artifact name
-          path: output/server     # The path to the files or directory you want to publish
+          name: go-server-artifact     # Artifact name
+          path: output/server          # The path to the files or directory you want to publish
           
   deploy:
     name: Deploy to EC2
@@ -31,7 +31,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with: 
-          name: go-server         # Artifact name
+          name: go-server-artifact     # Artifact name
           
       - name: Push binary file to EC2
         uses: easingthemes/ssh-deploy@main
@@ -49,4 +49,5 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
+            sudo chmod 700 ~/golang/server
             sudo supervisorctl restart all
