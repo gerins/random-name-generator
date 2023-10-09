@@ -1,16 +1,14 @@
 name: Push-to-EC2
 
-# Trigger deployment only on push to main branch
 on:
   push:
     branches:
-      - master
+      - master # Trigger deployment only on push to main branch
 
 jobs:
-  deploy:
-    name: Deploy to EC2 on master branch push
+  build:
+    name: Build project
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout the files
         uses: actions/checkout@v2
@@ -18,8 +16,12 @@ jobs:
       - name: Build and package Go app
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o output/server main.go
-
-      - name: Deploy to Server
+          
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push binary file to EC2
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
@@ -28,7 +30,7 @@ jobs:
           SOURCE: "output/server"
           TARGET: "~/golang"
 
-      - name: Executing remote ssh commands using ssh key
+      - name: Restarting server on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
