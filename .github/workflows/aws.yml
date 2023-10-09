@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the files
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Build and package Go app
         run: |
@@ -20,8 +20,8 @@ jobs:
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: server         # Artifact name
-          path: output/server  # The path to the files or directory you want to publish
+          name: go-server         # Artifact name
+          path: output/server     # The path to the files or directory you want to publish
           
   deploy:
     name: Deploy to EC2
@@ -31,7 +31,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with: 
-          name: server         # Artifact name
+          name: go-server         # Artifact name
           
       - name: Push binary file to EC2
         uses: easingthemes/ssh-deploy@main
@@ -39,8 +39,8 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.EC2_HOST }}
           REMOTE_USER: ${{ secrets.EC2_USERNAME }}
-          SOURCE: "server"
-          TARGET: "~/golang"
+          SOURCE: server
+          TARGET: ~/golang
 
       - name: Restarting server on EC2
         uses: appleboy/ssh-action@master
