@@ -1,4 +1,4 @@
-name: Push-to-EC2
+name: development
 
 on:
   push:
@@ -10,29 +10,34 @@ jobs:
     name: Build project
     runs-on: ubuntu-latest
     steps:
+      # Clone from repository
       - name: Checkout the files
         uses: actions/checkout@v3
 
-      - name: Build and package Go app
+      # Compile
+      - name: Compile into Golang binary file
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o output/server main.go
 
+      # Upload the binary for later use in the next job
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: go-server-artifact     # Artifact name
-          path: output/server          # The path to the files or directory you want to publish
+          name: go-server-artifact  # Artifact name
+          path: output/server       # Target file or directory
           
   deploy:
     name: Deploy to EC2
     needs: build
     runs-on: ubuntu-latest
     steps:
+      # Download the binary from the previous jobs
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with: 
-          name: go-server-artifact     # Artifact name
-          
+          name: go-server-artifact  # Artifact name
+
+      # Upload Golang binary file to EC2 Server
       - name: Push binary file to EC2
         uses: easingthemes/ssh-deploy@main
         env:
@@ -41,7 +46,9 @@ jobs:
           REMOTE_USER: ${{ secrets.EC2_USERNAME }}
           SOURCE: server
           TARGET: ~/golang
-
+      
+      # Change the file permissions to read, write, and execute
+      # and then restart the server using Supervisor
       - name: Restarting server on EC2
         uses: appleboy/ssh-action@master
         with:
