@@ -1,4 +1,4 @@
-name: development
+name: Deploy Golang to AWS EC2
 
 on:
   push:
@@ -57,4 +57,5 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             sudo chmod 700 ~/golang/server
-            sudo supervisorctl restart all
+            sudo supervisorctl restart go-server-1
+            sudo supervisorctl restart go-server-2
